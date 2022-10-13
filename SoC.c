@@ -256,15 +256,15 @@ void socInit(SoC* soc, SocRamAddF raF, void*raD, readcharF rc, writecharF wc, bl
 	if(!pxa255icInit(&soc->ic, &soc->cpu, &soc->mem)) ERR_("Cannot init PXA255's interrupt controller");
 	cp14Init(&soc->cp14, &soc->cpu, &soc->ic);
 	if(!pxa255timrInit(&soc->timr, &soc->mem, &soc->ic)) ERR_("Cannot init PXA255's OS timers");
-	if(!pxa255rtcInit(&soc->rtc, &soc->mem, &soc->ic)) ERR_("Cannot init PXA255's RTC");
+	//if(!pxa255rtcInit(&soc->rtc, &soc->mem, &soc->ic)) ERR_("Cannot init PXA255's RTC");
 	if(!pxa255uartInit(&soc->ffuart, &soc->mem, &soc->ic,PXA255_FFUART_BASE, PXA255_I_FFUART)) ERR_("Cannot init PXA255's FFUART");
-	if(!pxa255uartInit(&soc->btuart, &soc->mem, &soc->ic,PXA255_BTUART_BASE, PXA255_I_BTUART)) ERR_("Cannot init PXA255's BTUART");
-	if(!pxa255uartInit(&soc->stuart, &soc->mem, &soc->ic,PXA255_STUART_BASE, PXA255_I_STUART)) ERR_("Cannot init PXA255's STUART");
+	//if(!pxa255uartInit(&soc->btuart, &soc->mem, &soc->ic,PXA255_BTUART_BASE, PXA255_I_BTUART)) ERR_("Cannot init PXA255's BTUART");
+	//if(!pxa255uartInit(&soc->stuart, &soc->mem, &soc->ic,PXA255_STUART_BASE, PXA255_I_STUART)) ERR_("Cannot init PXA255's STUART");
 	if(!pxa255pwrClkInit(&soc->pwrClk, &soc->cpu, &soc->mem)) ERR_("Cannot init PXA255's Power and Clock manager");
 	if(!pxa255gpioInit(&soc->gpio, &soc->mem, &soc->ic)) ERR_("Cannot init PXA255's GPIO controller");
 	if(!pxa255dmaInit(&soc->dma, &soc->mem, &soc->ic)) ERR_("Cannot init PXA255's DMA controller");
 	if(!pxa255dspInit(&soc->dsp, &soc->cpu)) ERR_("Cannot init PXA255's cp0 DSP");
-	if(!pxa255lcdInit(&soc->lcd, &soc->mem, &soc->ic)) ERR_("Cannot init PXA255's LCD controller");
+	//if(!pxa255lcdInit(&soc->lcd, &soc->mem, &soc->ic)) ERR_("Cannot init PXA255's LCD controller");
 
 	pxa255uartSetFuncs(&soc->ffuart, socUartPrvRead, socUartPrvWrite, soc);
 }
@@ -333,7 +333,7 @@ void socRun(SoC* soc, UInt32 gdbPort){
 		cp14Tick(&soc->cp14);
 		if(!(cycles & 0x000007UL)) pxa255timrTick(&soc->timr);
 		if(!(cycles & 0x0000FFUL)) pxa255uartProcess(&soc->ffuart);
-		if(!(cycles & 0x000FFFUL)) pxa255rtcUpdate(&soc->rtc);
+		//if(!(cycles & 0x000FFFUL)) pxa255rtcUpdate(&soc->rtc);
 		if(!(cycles & 0x01FFFFUL)) pxa255lcdFrame(&soc->lcd);
 
 		#ifdef GDB_SUPPORT
