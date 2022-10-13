@@ -334,7 +334,7 @@ void socRun(SoC* soc, UInt32 gdbPort){
 		if(!(cycles & 0x000007UL)) pxa255timrTick(&soc->timr);
 		if(!(cycles & 0x0000FFUL)) pxa255uartProcess(&soc->ffuart);
 		//if(!(cycles & 0x000FFFUL)) pxa255rtcUpdate(&soc->rtc);
-		if(!(cycles & 0x01FFFFUL)) pxa255lcdFrame(&soc->lcd);
+		//if(!(cycles & 0x01FFFFUL)) pxa255lcdFrame(&soc->lcd);
 
 		#ifdef GDB_SUPPORT
 			gdbCmdWait(soc, gdbPort, &ss);
