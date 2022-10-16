@@ -21,21 +21,27 @@ ifeq ($(BUILD), debug)
 endif
 
 ifeq ($(BUILD), profile)
-	CC_FLAGS	= -O3 -g -pg -fno-omit-frame-pointer -march=core2 -mpreferred-stack-boundary=4  -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+	CC_FLAGS	= -O3 -g -pg -fno-omit-frame-pointer -march=native -mpreferred-stack-boundary=4  -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 	LD_FLAGS	= -O3 -g -pg
 	EXTRA_OBJS	= main_pc.o
 endif
 
 ifeq ($(BUILD), opt)
-	CC_FLAGS	= -O3 -fomit-frame-pointer -march=core2 -mpreferred-stack-boundary=4 -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+	CC_FLAGS	= -O3 -fomit-frame-pointer -march=native -mpreferred-stack-boundary=4 -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 	LD_FLAGS	= -O3
 	EXTRA_OBJS	= main_pc.o
 endif
 
 ifeq ($(BUILD), opt64)
-	CC_FLAGS	= -O3 -fomit-frame-pointer -march=core2 -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+	CC_FLAGS	= -O3 -fomit-frame-pointer -march=native -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 	LD_FLAGS	= -O3
 	EXTRA_OBJS	= main_pc.o
+endif
+
+ifeq ($(BUILD), swap)
+	CC_FLAGS	= -O3 -fomit-frame-pointer -march=native -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+	LD_FLAGS	= -O3
+	EXTRA_OBJS	= main_swap.o
 endif
 
 LDFLAGS = $(LD_FLAGS) -Wall -Wextra
@@ -118,6 +124,9 @@ pxa255_DSP.o: pxa255_DSP.c pxa255_DSP.h CPU.h math64.h
 
 main_pc.o: SoC.h main_pc.c types.h
 	$(CC) $(CCFLAGS) -o main_pc.o -c main_pc.c
+
+main_swap.o: SoC.h main_pc.c types.h
+	$(CC) $(CCFLAGS) -o main_swap.o -c main_swap.c
 
 main_avr.o: SoC.h main_avr.c types.h
 	$(CC) $(CCFLAGS) -o main_avr.o -c main_avr.c
