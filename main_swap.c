@@ -198,7 +198,9 @@ FILE* swap = NULL;
 
 Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean write, void* bufP){
 
-	UInt8* b = bufP;
+    UInt8* b = bufP;
+    
+    addr &= 0xFFFFFF;
     fseeko(swap, addr, SEEK_SET);
 
     if (write)
