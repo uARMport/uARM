@@ -16,6 +16,7 @@
 #include "pxa255_DMA.h"
 #include "pxa255_DSP.h"
 #include "pxa255_LCD.h"
+#include <stdio.h>
 #ifdef EMBEDDED
 	#include <avr/io.h>
 #endif
@@ -35,6 +36,8 @@ static const UInt8 embedded_boot[] =	{
 
 #define RAM_BASE	0xA0000000UL
 #define RAM_SIZE	0x01000000UL	//16M @ 0xA0000000
+
+#define BUF_SIZE    0x20000 // 128 KB buffer
 
 
 static Boolean vMemF(ArmCpu* cpu, void* buf, UInt32 vaddr, UInt8 size, Boolean write, Boolean priviledged, UInt8* fsrP){
@@ -118,7 +121,35 @@ static Boolean hyperF(ArmCpu* cpu){		//return true if handled
 				soc->blkDevBuf[cpu->regs[1]] = cpu->regs[0];
 			}
 			else return false;
+            break;
 		}
+
+        case 6: {
+            // memcpy hypercall
+
+            // R0 = dest
+            // R1 = source
+            // R2 = size
+
+            UInt8 buf[BUF_SIZE]; // buffer
+
+            UInt32 c = cpu->regs[2] / BUF_SIZE;
+
+            for (UInt32 i = 0; i < c; i++) {
+                ramAccess(cpu->regs[1] + i*BUF_SIZE, BUF_SIZE, 0, buf); // read
+                ramAccess(cpu->regs[0] + i*BUF_SIZE, BUF_SIZE, 1, buf); // write
+            }
+
+            UInt32 r = cpu->regs[2] % BUF_SIZE;
+
+            if (r > 0) {
+                // Copy the last bytes
+                ramAccess(cpu->regs[1] + cpu->regs[2] - r, r, 0, buf); // read
+                ramAccess(cpu->regs[0] + cpu->regs[2] - r, r, 1, buf); // write
+            }
+            
+            break;
+        }
 	}
 	return true;
 }

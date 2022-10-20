@@ -92,7 +92,7 @@ callout_RAM.o: callout_RAM.c callout_RAM.h mem.h types.h
 SD.o: SD.c SD.h types.h
 	$(CC) $(CCFLAGS) -o SD.o -c SD.c
 
-SoC.o: SoC.c SoC.h RAM.h mem.h CPU.h MMU.h pxa255_IC.h math64.h icache.h
+SoC.o: SoC.c SoC.h RAM.h mem.h CPU.h MMU.h pxa255_IC.h math64.h icache.h callout_RAM.h
 	$(CC) $(CCFLAGS) -o SoC.o -c SoC.c
 
 pxa255_IC.o: pxa255_IC.c pxa255_IC.h mem.h CPU.h
@@ -125,7 +125,7 @@ pxa255_DSP.o: pxa255_DSP.c pxa255_DSP.h CPU.h math64.h
 main_pc.o: SoC.h main_pc.c types.h
 	$(CC) $(CCFLAGS) -o main_pc.o -c main_pc.c
 
-main_swap.o: SoC.h main_pc.c types.h
+main_swap.o: SoC.h main_pc.c types.h SoC.c
 	$(CC) $(CCFLAGS) -o main_swap.o -c main_swap.c
 
 main_avr.o: SoC.h main_avr.c types.h

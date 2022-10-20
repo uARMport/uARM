@@ -1,4 +1,5 @@
 #include "SoC.h"
+#include "types.h"
 
 
 #include <sys/time.h>
@@ -207,6 +208,18 @@ Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean w
         return fwrite(b, 1, size, swap) == size;
     else
         return fread(b, 1, size, swap) == size;
+}
+
+void ramAccess(UInt32 addr, UInt32 size, Boolean write, void* bufP) {
+    UInt8* b = bufP;
+
+    addr &= 0xFFFFFF;
+    fseeko(swap, addr, SEEK_SET);
+
+    if (write)
+        fwrite(b, size, 1, swap);
+    else
+        fread(b, size, 1, swap);
 }
 
 SoC soc;
