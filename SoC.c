@@ -57,6 +57,27 @@ static Boolean vMemF(ArmCpu* cpu, void* buf, UInt32 vaddr, UInt8 size, Boolean w
 	return mmuTranslate(&soc->mmu, vaddr, priviledged, write, &pa, fsrP) && memAccess(&soc->mem, pa, size, write, buf);
 }
 
+void memcpy_hpc(UInt32 dst, UInt32 src, UInt32 sz) {
+    // memcpy hypercall
+
+    UInt8 buf[BUF_SIZE]; // buffer
+
+    UInt32 c = sz / BUF_SIZE;
+
+    for (UInt32 i = 0; i < c; i++) {
+        ramAccess(src + i*BUF_SIZE, BUF_SIZE, 0, buf); // read
+        ramAccess(dst + i*BUF_SIZE, BUF_SIZE, 1, buf); // write
+    }
+
+    UInt32 r = sz % BUF_SIZE;
+
+    if (r > 0) {
+        // Copy the last bytes
+        ramAccess(src + sz - r, r, 0, buf); // read
+        ramAccess(dst + sz - r, r, 1, buf); // write
+    }
+}
+
 
 static Boolean hyperF(ArmCpu* cpu){		//return true if handled
 
@@ -125,29 +146,15 @@ static Boolean hyperF(ArmCpu* cpu){		//return true if handled
 		}
 
         case 6: {
-            // memcpy hypercall
+            // memcpy hypercall (for Linux)
+            memcpy_hpc(cpu->regs[0], cpu->regs[1], cpu->regs[2]);
+            break;
+        }
 
-            // R0 = dest
-            // R1 = source
-            // R2 = size
-
-            UInt8 buf[BUF_SIZE]; // buffer
-
-            UInt32 c = cpu->regs[2] / BUF_SIZE;
-
-            for (UInt32 i = 0; i < c; i++) {
-                ramAccess(cpu->regs[1] + i*BUF_SIZE, BUF_SIZE, 0, buf); // read
-                ramAccess(cpu->regs[0] + i*BUF_SIZE, BUF_SIZE, 1, buf); // write
-            }
-
-            UInt32 r = cpu->regs[2] % BUF_SIZE;
-
-            if (r > 0) {
-                // Copy the last bytes
-                ramAccess(cpu->regs[1] + cpu->regs[2] - r, r, 0, buf); // read
-                ramAccess(cpu->regs[0] + cpu->regs[2] - r, r, 1, buf); // write
-            }
-            
+        case 7: {
+            // memcpy hypercall (ELLE)
+            // ELLE pass to register 2 = sz/4
+            memcpy_hpc(cpu->regs[0], cpu->regs[1], 4*cpu->regs[2]);
             break;
         }
 	}
